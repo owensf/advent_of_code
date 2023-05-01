@@ -9,7 +9,7 @@
 #define MY_SCISSORS 90
 using namespace std;
 
-int day1_part1(){
+int day2_part1(){
     string line;
     ifstream myfile;
     int myscore = 0;

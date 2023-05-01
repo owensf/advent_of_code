@@ -11,6 +11,6 @@
 using namespace std;
 
 int main() {
-    day1_part1();
+    day2_part1();
     day2_part2();
 }
