@@ -11,6 +11,58 @@ typedef struct {
     bool visible;
 }Tree;
 
+int calc_visibility_score(vector<vector<shared_ptr<Tree>>> trees, int row, int col){
+    int tree_height = trees[row][col] -> height;
+    int num_left = 0;
+    int num_right = 0;
+    int num_up = 0;
+    int num_down = 0;
+    // check left
+    for (int i = col - 1; i >= 0; i--){
+        num_left++;
+        if (trees[row][i] -> height >= tree_height){
+            break;
+        }
+    }
+    // check_right;
+    for (int i = col + 1; i < trees[row].size(); i++){
+        num_right++;
+        if (trees[row][i] -> height >= tree_height){
+            break;
+        }
+    }
+    // check_up;
+    for (int i = row - 1; i >= 0; i--){
+        num_up++;
+        if (trees[i][col] -> height >= tree_height){
+            break;
+        }
+    }
+
+    // check_down;
+    for (int i = row + 1; i < trees.size(); i++){
+        num_down++;
+        if (trees[i][col] -> height >= tree_height){
+            break;
+        }
+    }
+    // if it doesn't break early, it's going to double count the edge
+    return num_left * num_right * num_up * num_down;
+}
+
+int highest_visibility_score(vector<vector<shared_ptr<Tree>>> trees){
+    int highest_score = 0;
+    for (int i = 0; i < trees.size(); i++){
+        for (int j = 0; j < trees[i].size(); j++){
+            int tree_score = calc_visibility_score(trees, i, j);
+            if (tree_score > highest_score){
+                highest_score = tree_score;
+            }
+        }
+    }
+    return highest_score;
+}
+
 int count_visible(vector<vector<shared_ptr<Tree>>> trees){
     int num_visible = 0;
     for (vector<shared_ptr<Tree>> tree_row: trees){
@@ -75,6 +127,8 @@ int day8_part1(string filename){
         }
         find_visible_row(tree_col);
     }
+
+    cout << "highest vis score" << highest_visibility_score(trees) << endl;
 
     return count_visible(trees);
 }
