@@ -24,20 +24,17 @@ struct Node {
 };
 
 
-/*
-struct Dir_Node {
-    int size;
-    string name;
-    vector<File_Node*> files;
-    Dir_Node* parent;
-};
 
-struct File_Node {
-    int size;
-    string name;
-    Dir_Node* upper;
-};
-*/
+// sum_over: trying to find smallest directory bigger than sum_over
+shared_ptr<struct Node> find_dir_to_delete(shared_ptr<struct Node> current_node, int sum_over, shared_ptr<struct Node> largest_node){
+    if ((current_node -> size < largest_node -> size) && (current_node -> size > sum_over)){
+        largest_node = current_node;
+    }
+    for (shared_ptr<Node> child : current_node -> child_folders){
+        largest_node = find_dir_to_delete(child, sum_over, largest_node);
+    }
+    return largest_node;
+}
 // find all folders with size below 100k
 int find_below_100k(shared_ptr<struct Node> current_node){
     int sum_under_100k = 0;
@@ -65,13 +62,6 @@ int add_sizes(shared_ptr<struct Node> current_node, int filesize){
 }
 
 shared_ptr<Node> find_node_name(shared_ptr<struct Node> parent_node, string name){
-    /*for (int i = 0; i < parent_node -> child_folders.size(); i++){
-        struct Node* child = parent_node -> child_folders[i];
-        cout << child -> name << endl;
-        if (child -> name == name){
-            return child;
-        }
-    }*/
     for (shared_ptr<struct Node> child : parent_node -> child_folders){
         if (child -> name == name){
             return child;
@@ -95,12 +85,7 @@ int day7_part1(string filename){
     my_file.open(filename);
     if (my_file.is_open()){
         while(getline(my_file, line)){
-            line_number++;
-            //cout << line_number << endl;
-            //cout << current_node -> name << endl;
-            //cout << current_node -> size << endl;
-            /*
-             * User commands:
+             /** User commands:
              * cd
              * ls
              */
@@ -118,10 +103,7 @@ int day7_part1(string filename){
                         smatch m;
                         regex_search(line, m, r);
                         string folder_name = m.str(1);
-                        /*for (int i = 0; i < current_node-> child_folders.size(); i++){
-                            struct Node* child = current_node -> child_folders[i];
-                            cout << child -> name << endl;
-                        }*/
+
                         current_node = find_node_name(current_node, folder_name);
                     }
                 }
@@ -140,25 +122,16 @@ int day7_part1(string filename){
                         shared_ptr<struct Node> child_folder(new Node);
                         child_folder -> size = 0;
                         child_folder -> name = folder_name;
-                        //cout << child_folder -> name << endl;
                         child_folder -> folder = true;
                         child_folder -> parent = current_node;
                         current_node -> child_folders.push_back(child_folder);
-                        /*for (int i = 0; i < current_node-> child_folders.size(); i++){
-                             cout << current_node -> child_folders.size();
-                             struct Node* child = current_node -> child_folders[i];
-                             cout << child -> name << endl;
-                         }*/
-                        /*for (struct Node* child: current_node -> child_folders){
-                            cout << child -> name << endl;
-                        }*/
+
                         current_node -> child_folders_names.push_back(folder_name);
                     }
                 }
                 // it's a file
                 else{
                     // check if file exists
-                    //regex r("(\\d+) (\\w+.\\w+)");
                     regex r ("(\\d+) ([A-Za-z.]+)");
                     smatch m;
                     regex_search(line, m, r);
@@ -169,16 +142,11 @@ int day7_part1(string filename){
                         child_node -> name = child_filename;
                         child_node -> folder = false;
                         child_node -> parent = current_node;
-                        /*if (child_node -> size < 0){
-                            cout << child_node -> name << endl;
-                        }*/
+
                         add_sizes(child_node, child_node -> size);
                         current_node -> child_files.push_back(child_node);
                         current_node -> child_files_names.push_back(child_filename);
-                        /*for (struct Node* child: current_node -> child_files){
-                            cout << "child filenames!" << endl;
-                            cout << child -> name << endl;
-                        }*/
+
                     }
                 }
             }
@@ -186,6 +154,9 @@ int day7_part1(string filename){
     }
     my_file.close();
     // add up folders at the end
+    cout << "sum over" << home_node -> size -40000000<< endl;
+    cout <<"delete: " << find_dir_to_delete(home_node, home_node -> size -40000000, home_node) -> size << endl;
+
 
     sum_dirs_below_100k = find_below_100k(home_node);
     return sum_dirs_below_100k;
