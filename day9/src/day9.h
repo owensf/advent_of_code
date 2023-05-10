@@ -29,6 +29,10 @@ class Knot {
     Knot(){
         coordinates.x = 0;
         coordinates.y = 0;
+        Position starting_position;
+        starting_position.x = coordinates.x;
+        starting_position.y= coordinates.y;
+        visited_positions.push_back(starting_position);
         //visited_positions = {};
     }
     // move up/down/left/right
@@ -150,4 +154,30 @@ int day9_part1(string filename){
         }
     }
     return tail.count_locations();
+}
+
+// 9 tails instead of 1!
+int day9_part2(string filename){
+    string line;
+    ifstream my_file;
+    Knot head;
+    Knot tails[9];
+    my_file.open(filename);
+    if (my_file.is_open()){
+        while(getline(my_file, line)){
+            regex r("(\\w) (\\d+)");
+            smatch m;
+            regex_search(line, m, r);
+            char direction = m.str(1)[0];
+            int num_steps = stoi(m.str(2));
+            for (int i = 0; i < num_steps; i++){
+                head.move(direction);
+                tails[0].update_tail(&head);
+                for (int j = 1; j < 9; j++){
+                    tails[j].update_tail(&tails[j-1]);
+                }
+            }
+        }
+    }
+    return tails[8].count_locations();
 }

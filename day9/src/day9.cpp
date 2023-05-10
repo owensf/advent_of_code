@@ -13,7 +13,6 @@ using namespace std;
 #endif
 
 int main() {
-    // + 1 because it doesn't count the starting position
-	cout << day9_part1(FILENAME) + 1 << endl;
+	cout << day9_part2(FILENAME) << endl;
 	return 0;
 }
