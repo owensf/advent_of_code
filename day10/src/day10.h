@@ -47,3 +47,56 @@ int day10_part1(std::string filename){
     }
     return value_sum;
 }
+
+
+// output screen seen on cathode crt
+void day10_part2(std::string filename){
+    std::string line;
+    std::ifstream my_file;
+    int reg_value = 1;
+    int cycle_count = 0;
+    std::vector<int> historic_reg_values;
+    historic_reg_values.push_back(1);
+    my_file.open(filename);
+    if (my_file.is_open()){
+        while(getline(my_file, line)){
+            // parse command
+            if (line.substr(0, 4) == "noop"){
+                historic_reg_values.push_back(reg_value);
+            }
+            else{
+                historic_reg_values.push_back(reg_value);
+                // check for negative
+                if (line.substr(5, 1) == "-"){
+                    std::regex r("addx -(\\d+)");
+                    std::smatch m;
+                    std::regex_search(line, m, r);
+                    reg_value -= stoi(m.str(1));
+                    historic_reg_values.push_back(reg_value);
+                }
+                else{
+                std::regex r("addx (\\d+)");
+                std::smatch m;
+                std::regex_search(line, m, r);
+                reg_value += stoi(m.str(1));
+                historic_reg_values.push_back(reg_value);
+                }
+            }
+        }
+    }
+    // print a 40x6 display
+    for (int i = 0; i < 6; i++){
+        for (int j = 0; j < 40; j++){
+            //std::cout << historic_reg_values[i * 40 + j] << std::endl;
+
+            //if (abs(historic_reg_values[(i * 40) + j] - i * 40 - j) < 2){
+            if (abs(historic_reg_values[(i * 40) + j] - j) < 2){
+                std::cout << "#";
+            }
+            else{
+                std::cout << ".";
+            }
+        }
+        std::cout << std::endl;
+    }
+}

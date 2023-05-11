@@ -12,6 +12,6 @@
 #endif
 
 int main() {
-	std::cout << day10_part1(FILENAME) << std::endl;
+	day10_part2(FILENAME);
 	return 0;
 }
